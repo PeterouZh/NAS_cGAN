@@ -1,0 +1,51 @@
+train_cnn_macro:
+  seed: 0
+  dataset:
+    data_path: ~/.keras/cifar10
+    cutout: 0
+    batch_size: 128
+    num_worker_val: 2
+    num_worker_test: 2
+    num_worker_train: 2
+  model:
+    search_for: macro
+    child_num_layers: 12
+    child_num_branches: 6
+    child_out_filters: 36
+    controller_lstm_size: 64
+    controller_lstm_num_layers: 1
+    controller_tanh_constant: 1.5
+    controller_skip_target: 0.4
+    child_keep_prob: 0.9
+  optimizer:
+    controller_lr: 0.001
+    child_lr_max: 0.05
+    child_l2_reg: 0.00025
+    child_lr_T: 10
+    child_lr_min: 0.0005
+  train:
+    fixed_arc: false
+  train_enas:
+    num_epochs: 310
+    eval_every_epochs: 1
+  train_shared_cnn:
+    dummy: false
+#    dummy: true
+    child_grad_bound: 5.0
+    log_every: 50
+  train_controller:
+    dummy: false
+#    dummy: true
+    controller_train_steps: 50
+    controller_num_aggregate: 20
+    controller_entropy_weight: 0.0001
+    controller_bl_dec: 0.99
+    controller_skip_weight: 0.8
+    child_grad_bound: 5.0
+  evaluate_model:
+    verbose: true
+    n_samples: 10
+
+
+
+
