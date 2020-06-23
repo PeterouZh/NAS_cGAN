@@ -598,44 +598,6 @@ class TrainerSupernetCondController(TrainerNASGAN):
     self.evaluate_model(classes_arcs=classes_arcs, iteration=iteration)
     comm.synchronize()
 
-  def derive_arcs(self):
-    from numpy import array, array_equal, allclose
-    fixed_arc_file           = get_attr_kwargs(self.cfg.derive_arcs, 'fixed_arc_file')
-    num_rows                 = get_attr_kwargs(self.cfg.derive_arcs, 'num_rows', default=self.n_classes)
-
-    counter = 0
-    arc_list = []
-    try:
-      n_lines = rawgencount(fixed_arc_file)
-      print(n_lines)
-      with open(fixed_arc_file) as f:
-        while True:
-          if counter >= n_lines:
-            break
-          print(f"[{counter}/{n_lines}]", flush=True)
-
-          iteration = int(f.readline().strip(': \n'))
-          counter += 1
-          sample_arc = []
-          for _ in range(num_rows):
-            class_arc = f.readline().strip('[\n ]')
-            counter += 1
-            sample_arc.append(np.fromstring(class_arc, dtype=int, sep=' '))
-          sample_arc = np.array(sample_arc)
-          if array_eq_in_list(sample_arc, arc_list):
-            continue
-          arc_list.append(sample_arc)
-
-          classes_arcs = torch.from_numpy(sample_arc)
-          if len(classes_arcs) == 1:
-            classes_arcs = classes_arcs.repeat(self.n_classes, 1)
-          self.evaluate_model(classes_arcs=classes_arcs, iteration=iteration*self.iter_every_epoch)
-
-    except:
-      import traceback
-      print(traceback.format_exc())
-    print('End.')
-    pass
 
 @TRAINER_REGISTRY.register()
 class TrainerCondController(TrainerSupernetCondController):
@@ -826,18 +788,19 @@ class TrainerRetrainConditional(TrainerNASGAN):
 
     cfg = self.cfg.compute_intra_FID
 
-    ckpt_dir                       = get_attr_kwargs(cfg, 'ckpt_dir')
-    ckpt_epoch                     = get_attr_kwargs(cfg, 'ckpt_epoch')
-    ckpt_iter_every_epoch          = get_attr_kwargs(cfg, 'ckpt_iter_every_epoch')
+    ckpt_path                      = get_attr_kwargs(cfg, 'ckpt_path', default=None)
+    ckpt_dir                       = get_attr_kwargs(cfg, 'ckpt_dir', default='')
+    ckpt_epoch                     = get_attr_kwargs(cfg, 'ckpt_epoch', default=0)
+    ckpt_iter_every_epoch          = get_attr_kwargs(cfg, 'ckpt_iter_every_epoch', default=0)
     registed_name                  = get_attr_kwargs(cfg, 'registed_name')
     fid_stats_dir                  = get_attr_kwargs(cfg, 'fid_stats_dir')
     num_inception_images           = get_attr_kwargs(cfg, 'num_inception_images')
     intra_FID_file                 = get_attr_kwargs(cfg, 'intra_FID_file')
     eval_total_FID                 = get_attr_kwargs(cfg, 'eval_total_FID', default=True)
 
-
-    ckpt_path = self._get_ckpt_path(ckpt_dir=ckpt_dir, ckpt_epoch=ckpt_epoch,
-                                    iter_every_epoch=ckpt_iter_every_epoch)
+    if not ckpt_path:
+      ckpt_path = self._get_ckpt_path(ckpt_dir=ckpt_dir, ckpt_epoch=ckpt_epoch,
+                                      iter_every_epoch=ckpt_iter_every_epoch)
     self._load_model(ckpt_path)
 
     classes_arcs = self.arcs
@@ -1088,46 +1051,5 @@ class TrainerRetrainConditionalFinetuneClass(TrainerRetrainConditional):
         for key in source_dict:
           target_dict[key].data.copy_(source_dict[key].data)
     pass
-
-
-@TRAINER_REGISTRY.register()
-class TrainerRetrainEnsembleConditional(TrainerRetrainConditional):
-
-  def __init__(self, cfg, **kwargs):
-    super().__init__(cfg=cfg, **kwargs)
-
-    self.num_ensemble_arcs                           = get_attr_kwargs(cfg.trainer, 'num_ensemble_arcs', **kwargs)
-    pass
-
-  def train_func(self, data, iteration, pbar):
-    images, labels = self.preprocess_image(data)
-    images = images.tensor
-
-    bs = len(images)
-
-    if self.num_ensemble_arcs == self.n_classes:
-      batched_arcs = self.arcs.repeat((bs, 1))
-    elif self.num_ensemble_arcs == 1:
-      # idx = iteration % self.n_classes
-      idx = torch.randint(self.n_classes, (1,))
-      batched_arcs = self.arcs[idx].repeat((bs, 1))
-    else:
-      arc_idx = [labels]
-      for i in range(self.num_ensemble_arcs - 1):
-        idx = torch.randperm(labels.nelement())
-        arc_idx.append(labels[idx])
-      arc_idx = torch.stack(arc_idx, dim=1).view(-1)
-      batched_arcs = self.arcs[arc_idx]
-
-    images = torch.repeat_interleave(images, self.num_ensemble_arcs, 0)
-    labels = torch.repeat_interleave(labels, self.num_ensemble_arcs, 0)
-
-    self.gan_model(images=images, labels=labels, z=self.z_train, iteration=iteration, batched_arcs=batched_arcs,
-                   ema=self.ema, max_iter=self.max_iter)
-
-    # Just for monitoring the training processing
-    classes_arcs = self.arcs
-    self.evaluate_model(classes_arcs=classes_arcs, iteration=iteration)
-    comm.synchronize()
 
 

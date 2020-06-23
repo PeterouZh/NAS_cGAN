@@ -1,0 +1,20 @@
+calculate_fid_stat_per_class_CIFAR10:
+  args:
+    num_gpus: 1
+  start:
+    name: compute_fid_stats_per_class
+    imagenet_root_dir: datasets/cifar10
+    dataset_name: cifar10_train_per_class
+    IMS_PER_BATCH: 50
+    img_size: 32
+    NUM_WORKERS: 0
+  dataset_mapper:
+    name: CIFAR10DatasetMapper
+    img_size: kwargs['img_size']
+  GAN_metric:
+    names:
+#    - PyTorchFIDISScore
+    - TFFIDISScore
+    torch_fid_stat: datasets/nas_cgan/pytorch_fid_stat/{dataset_name}_{img_size}/
+    tf_fid_stat: datasets/nas_cgan/tf_fid_stat/{dataset_name}_{img_size}
+    tf_inception_model_dir: datasets/nas_cgan/tf_inception_model

@@ -3,3 +3,4 @@ easydict
 scipy
 imageio
 tensorboardX
+opencv-python

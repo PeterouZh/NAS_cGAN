@@ -126,10 +126,6 @@ def compute_fid_stats_per_class(cfg, args, myargs):
     from template_lib.d2.data.build_cifar10_per_class import find_classes
   elif dataset_name.startswith('cifar100_train_per_class'):
     from template_lib.d2.data.build_cifar100_per_class import find_classes
-  elif dataset_name.startswith('imagenet'):
-    # register all class of ImageNet for dataloader
-    from template_lib.d2.data.build_ImageNet_per_class import ImageNetDatasetPerClassMapper
-    from template_lib.d2.data.BigGAN import find_classes
 
   torch_fid_stat = torch_fid_stat.format(dataset_name=dataset_name, img_size=img_size)
   tf_fid_stat = tf_fid_stat.format(dataset_name=dataset_name, img_size=img_size)

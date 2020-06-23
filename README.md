@@ -52,7 +52,8 @@ which should be put into the directories mentioned above.
 
 ## Evaluate the models reported in the paper
 
-Download the pre-trained models [onedrive](https://sjtueducn-my.sharepoint.com/:f:/g/personal/zhoupengcv_sjtu_edu_cn/EsokPqpwPMhPi8IjPh8WQBoBQF9S1iunCj-EdpawvjyyHQ?e=hAphaG), and put them into *./datasets/nas_cgan/models*.
+Download the pre-trained models [onedrive](https://sjtueducn-my.sharepoint.com/:f:/g/personal/zhoupengcv_sjtu_edu_cn/EsokPqpwPMhPi8IjPh8WQBoBQF9S1iunCj-EdpawvjyyHQ?e=owFvIe), 
+and put them into *./datasets/nas_cgan/models*.
 ### FID and IS
 Eval NAS-cGAN on CIFAR10.
 ```bash
@@ -78,10 +79,29 @@ python 	exp/nas_cgan/scripts/train_net.py \
 
 ### intra FIDs
 
-Pre-calculate FID statistics on CIFAR10.
+Pre-calculate intra FID statistic of each class on CIFAR10. 
+Or you can use our pre-calculated files [onedrive](https://sjtueducn-my.sharepoint.com/:f:/g/personal/zhoupengcv_sjtu_edu_cn/EhWbm-z9lLJDpcZ5KuqmfO0Bd5ak80J5QBT_G3y6zkYdEw?e=PR3VEF),
+and put these files in *./datasets/nas_cgan/tf_fid_stat/cifar10_train_per_class_32*.
 ```bash
-
+export LD_LIBRARY_PATH=/usr/local/cuda-10.0/lib64:/usr/local/cudnn-10.0-v7.6.5.32/lib64:$LD_LIBRARY_PATH
+export CUDA_VISIBLE_DEVICES=0
+export PYTHONPATH=.:./exp
+python 	exp/nas_cgan/scripts/train_net.py \
+  --config exp/nas_cgan/configs/calculate_fid_stat_per_class_CIFAR10.yaml \
+  --command calculate_fid_stat_per_class_CIFAR10 \
+  --outdir results/calculate_fid_stat_per_class_CIFAR10
 ``` 
+
+Eval intra FIDs for NAS-cGAN.
+```bash
+export LD_LIBRARY_PATH=/usr/local/cuda-10.0/lib64:/usr/local/cudnn-10.0-v7.6.5.32/lib64:$LD_LIBRARY_PATH
+export CUDA_VISIBLE_DEVICES=0
+export PYTHONPATH=.:./exp
+python 	exp/nas_cgan/scripts/train_net.py \
+  --config exp/nas_cgan/configs/eval_intra_FID_NAS_cGAN_CIFAR10.yaml \
+  --command eval_intra_FID_NAS_cGAN_CIFAR10 \
+  --outdir results/eval_intra_FID_NAS_cGAN_CIFAR10
+```
 
 ## Acknowledgement
 
