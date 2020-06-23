@@ -220,7 +220,7 @@ def do_train(cfg, args, myargs):
   checkpoint_period = eval(checkpoint_period, dict(iter_every_epoch=iter_every_epoch))
   periodic_checkpointer = PeriodicCheckpointer(checkpointer, checkpoint_period, max_iter=max_iter)
   logger.info("Starting training from iteration {}".format(start_iter))
-  modelarts_utils.modelarts_sync_results(args=myargs.args, myargs=myargs, join=True, end=False)
+
   with EventStorage(start_iter) as storage:
     pbar = zip(data_loader, range(start_iter, max_iter))
     if comm.is_main_process():
@@ -239,7 +239,7 @@ def do_train(cfg, args, myargs):
 
       periodic_checkpointer.step(iteration)
       pass
-  modelarts_utils.modelarts_sync_results(args=myargs.args, myargs=myargs, join=True, end=True)
+
   comm.synchronize()
 
 
@@ -285,7 +285,6 @@ def main(args, myargs):
 
   build_start(cfg=cfg, args=args, myargs=myargs)
 
-  modelarts_utils.modelarts_sync_results(args=myargs.args, myargs=myargs, join=True, end=True)
   return
 
 
@@ -295,9 +294,6 @@ def run(argv_str=None):
   args1, myargs, _ = parse_args_and_setup_myargs(argv_str, run_script=run_script, start_tb=False)
   myargs.args = args1
   myargs.config = getattr(myargs.config, args1.command)
-
-  if hasattr(myargs.config, 'datasets'):
-    prepare_dataset(myargs.config.datasets, cfg=myargs.config)
 
   args = default_argument_parser().parse_args(args=[])
   args = config2args(myargs.config.args, args)
@@ -319,5 +315,4 @@ def run(argv_str=None):
 
 if __name__ == "__main__":
   run()
-  # from template_lib.examples import test_bash
-  # test_bash.TestingUnit().test_resnet(gpu=os.environ['CUDA_VISIBLE_DEVICES'])
+

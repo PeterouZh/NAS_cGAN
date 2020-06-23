@@ -1,0 +1,133 @@
+eval_NAS_caGAN_CIFAR10:
+  args:
+    num_gpus: 1
+    resume: false
+  start:
+    name: do_train
+    dataset_name: cifar10_train
+    IMS_PER_BATCH: 32
+    max_epoch: 1000
+    ASPECT_RATIO_GROUPING: false
+    NUM_WORKERS: 0
+    checkpoint_period: iter_every_epoch
+    dataset_mapper:
+      name: CIFAR10DatasetMapper
+      img_size: 32
+    run_func: evaluation
+  trainer:
+    name: TrainerRetrainConditional
+    iter_every_epoch: kwargs['iter_every_epoch']
+    n_classes: 10
+    img_size: kwargs['img_size']
+    train_bs: kwargs['train_bs']
+    eval_torch_every_itr: 10*iter_every_epoch
+    train_controller_every_iter: 50
+    eval_tf_every_itr: 10*iter_every_epoch
+    fixed_arc_file: exp/nas_cgan/configs/cond_arcs_cifar10.log
+    fixed_epoch: 1
+    use_ema: true
+    load_model: false
+  GAN_metric:
+    names:
+    - TFFIDISScore
+    torch_fid_stat: datasets/nas_cgan/pytorch_fid_stat/fid_stats_pytorch_cifar10_train_32.npz
+    tf_fid_stat: datasets/nas_cgan/tf_fid_stat/fid_stats_tf_cifar10_train_32.npz
+    tf_inception_model_dir: datasets/nas_cgan/tf_inception_model
+    num_inception_images: 50000
+  generator:
+    name: DenseGeneratorCBN_v2
+    ch: 512
+    linear_ch: 128
+    bottom_width: 4
+    dim_z: 256
+    init_type: orth
+    embedding_dim: 128
+    cfg_upsample:
+      name: UpSample
+    num_cells: 3
+    cfg_cell:
+      name: DenseBlock
+      n_nodes: 2
+      cfg_mix_layer:
+        name: MixedLayerShareWeights
+        kernel_size: 3
+        bias: false
+    cfg_out_bn:
+      name: NoNorm
+    cfg_ops:
+      Conv2d_3x3:
+        name: ActConv2d
+        cfg_act:
+          name: ReLU
+        cfg_conv:
+          name: Conv2dOp
+          kernel_size: 3
+          padding: 1
+      StyleV2Conv:
+        name: StyleV2Conv
+        add_noise: true
+        cfg_modconv:
+          name: ModulatedConv2dOp
+          kernel_size: 3
+          style_dim: 192
+    optimizer:
+      name: Adam
+      lr: 0.0001
+      betas:
+      - 0.0
+      - 0.9
+      eps: 1.0e-08
+  controller:
+    name: FairController
+    num_layers: kwargs['num_layers']
+    num_branches: kwargs['num_branches']
+    optimizer:
+      name: NoneOptim
+  discriminator:
+    name: AutoGANCIFAR10ADiscriminatorCProj
+    ch: 256
+    d_spectral_norm: true
+    init_type: orth
+    cfg_act:
+      name: ReLU
+    optimizer:
+      name: Adam
+      lr: 0.0001
+      betas:
+      - 0.0
+      - 0.9
+      eps: 1.0e-08
+    size: kwargs['img_size']
+    use_cproj: true
+  noise:
+    z_train:
+      name: Normal
+      loc: 0
+      scale: 1
+      sample_shape: kwargs['sample_shape']
+      num_ops: kwargs['num_ops']
+    y_train:
+      name: CategoricalUniform
+      n_classes: kwargs['n_classes']
+      sample_shape: kwargs['sample_shape']
+      num_ops: kwargs['num_ops']
+    z_test:
+      name: Normal
+      loc: 0
+      scale: 1
+      sample_shape: kwargs['sample_shape']
+    y_test:
+      name: CategoricalUniform
+      n_classes: kwargs['n_classes']
+      sample_shape: kwargs['sample_shape']
+  GAN_model:
+    name: HingeLossCond
+    dummy: false
+    n_critic: 5
+    log_every: 50
+    b: 0.5
+  dataset:
+    dataset_mapper: CIFAR10DatasetMapper
+    img_size: 32
+  evaluation:
+    ckpt_dir: datasets/nas_cgan/models/nas_cagan_cifar10.pth

@@ -741,6 +741,18 @@ class TrainerRetrainConditional(TrainerNASGAN):
       self.evaluate_model(classes_arcs=classes_arcs, iteration=epoch*self.iter_every_epoch)
     pass
 
+  def evaluation(self):
+    cfg = self.cfg.evaluation
+
+    ckpt_path             = get_attr_kwargs(cfg, 'ckpt_dir')
+
+    classes_arcs = self.arcs
+
+    self._load_model(ckpt_path)
+
+    self.evaluate_model(classes_arcs=classes_arcs, iteration=0)
+    pass
+
   def save_figure(self):
     cfg = self.cfg.save_figure
 
