@@ -36,6 +36,9 @@ cd NAS_cGAN
 Pre-calculate FID statistic files of CIFAR10 using PyTorch and TensorFlow models, respectively. 
 Those files will be saved to *./datasets/nas_cgan/pytorch_fid_stat/fid_stats_pytorch_cifar10_train_32.npz* and 
 *./datasets/nas_cgan/tf_fid_stat/fid_stats_tf_cifar10_train_32.npz*.
+
+Or you can download our pre-calculated statistic files [onedrive](https://sjtueducn-my.sharepoint.com/:f:/g/personal/zhoupengcv_sjtu_edu_cn/EuR9yg6MUzpGr3H7RGQdEUQBnXz5qMpfL-tKNTvg-t4_XA?e=CGFZ42),
+which should be put into the directories mentioned above.
  
 ```bash
 export LD_LIBRARY_PATH=/usr/local/cuda-10.0/lib64:/usr/local/cudnn-10.0-v7.6.5.32/lib64:$LD_LIBRARY_PATH
@@ -46,9 +49,6 @@ python 	exp/nas_cgan/scripts/train_net.py \
   --command calculate_fid_stat_CIFAR10 \
   --outdir results/calculate_fid_stat_CIFAR10
 ```
-
-Or you can download our pre-calculated statistic files [onedrive](https://sjtueducn-my.sharepoint.com/:f:/g/personal/zhoupengcv_sjtu_edu_cn/EuR9yg6MUzpGr3H7RGQdEUQBnXz5qMpfL-tKNTvg-t4_XA?e=CGFZ42),
-which should be put into the directories mentioned above.
 
 ## Evaluate the models reported in the paper
 
