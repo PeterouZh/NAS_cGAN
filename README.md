@@ -34,8 +34,8 @@ cd NAS_cGAN
 ## Prepare FID statistic file
 
 Pre-calculate FID statistic files of CIFAR10 using PyTorch and TensorFlow models, respectively. 
-Those files will be saved to *datasets/nas_cgan/pytorch_fid_stat/fid_stats_pytorch_cifar10_train_32.npz* and 
-*datasets/nas_cgan/tf_fid_stat/fid_stats_tf_cifar10_train_32.npz*.
+Those files will be saved to *./datasets/nas_cgan/pytorch_fid_stat/fid_stats_pytorch_cifar10_train_32.npz* and 
+*./datasets/nas_cgan/tf_fid_stat/fid_stats_tf_cifar10_train_32.npz*.
  
 ```bash
 export LD_LIBRARY_PATH=/usr/local/cuda-10.0/lib64:/usr/local/cudnn-10.0-v7.6.5.32/lib64:$LD_LIBRARY_PATH
@@ -117,7 +117,7 @@ python 	exp/nas_cgan/scripts/train_net.py \
 ### The calibrated results
 
 Prepare intra FID statistic files following the steps above (put these files in *./datasets/nas_cgan/tf_fid_stat/cifar10_train_per_class_32*).
-Download FID logits files produced by the calibrated models [onedrive](https://sjtueducn-my.sharepoint.com/:f:/g/personal/zhoupengcv_sjtu_edu_cn/ElDGDTDcfe9JnYV4sfsFRPwBpgA4UZZDrHKv80F3aZy3JQ?e=YIFdgP),
+Download FID logits files  [onedrive](https://sjtueducn-my.sharepoint.com/:f:/g/personal/zhoupengcv_sjtu_edu_cn/ElDGDTDcfe9JnYV4sfsFRPwBpgA4UZZDrHKv80F3aZy3JQ?e=YIFdgP) produced by the calibrated models,
 and put the files into *./datasets/nas_cgan/fid_logits_of_calibrated_model/*.
 
 ```bash
