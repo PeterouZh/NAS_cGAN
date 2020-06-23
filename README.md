@@ -24,7 +24,7 @@ pip install tensorflow-gpu==1.13.1
 ## Prepare FID statistic file
 
 Pre-calculate FID statistic files of CIFAR10 using PyTorch and TensorFlow models, respectively. 
-Those files will be saved in *datasets/nas_cgan/pytorch_fid_stat/fid_stats_pytorch_cifar10_train_32.npz* and 
+Those files will be saved to *datasets/nas_cgan/pytorch_fid_stat/fid_stats_pytorch_cifar10_train_32.npz* and 
 *datasets/nas_cgan/tf_fid_stat/fid_stats_tf_cifar10_train_32.npz*.
  
 ```bash
@@ -36,6 +36,8 @@ python 	exp/nas_cgan/scripts/train_net.py \
   --command calculate_fid_stat_CIFAR10 \
   --outdir results/calculate_fid_stat_CIFAR10
 ```
+
+Or you can download our pre-calculated statistics [onedrive](https://sjtueducn-my.sharepoint.com/:f:/g/personal/zhoupengcv_sjtu_edu_cn/EuR9yg6MUzpGr3H7RGQdEUQBnXz5qMpfL-tKNTvg-t4_XA?e=CGFZ42).
 
 ## Acknowledgement
 
