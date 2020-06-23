@@ -1,4 +1,4 @@
-eval_intra_FID_NAS_cGAN_CIFAR10:
+eval_calibrated_NAS_cGAN:
   args:
     num_gpus: 1
     resume: false
@@ -13,7 +13,7 @@ eval_intra_FID_NAS_cGAN_CIFAR10:
     dataset_mapper:
       name: CIFAR10DatasetMapper
       img_size: 32
-    run_func: compute_intra_FID
+    run_func: eval_calibrated_model
   trainer:
     name: TrainerRetrainConditional
     iter_every_epoch: kwargs['iter_every_epoch']
@@ -27,9 +27,6 @@ eval_intra_FID_NAS_cGAN_CIFAR10:
     fixed_epoch: 0
     use_ema: true
     load_model: false
-    ckpt_dir: results/CondDenseGAN_CIFAR10_v5/retrain_20200401-21_33_53_332/detectron2
-    ckpt_epoch: 500
-    ckpt_iter_every_epoch: 781
   GAN_metric:
     names:
     - TFFIDISScore
@@ -128,10 +125,7 @@ eval_intra_FID_NAS_cGAN_CIFAR10:
   dataset:
     dataset_mapper: CIFAR10DatasetMapper
     img_size: 32
-  compute_intra_FID:
-    ckpt_path: datasets/nas_cgan/models/nas_cgan_cifar10.pth
+  eval_calibrated_model:
     registed_name: cifar10_train_per_class
     fid_stats_dir: datasets/nas_cgan/tf_fid_stat/cifar10_train_per_class_32
-    num_inception_images: 5000
-    intra_FID_file: intra_FID.npz
-    eval_total_FID: false
+    fid_logits_file: datasets/nas_cgan/fid_logits_of_calibrated_model/fid_logits_nas_cgan.npz

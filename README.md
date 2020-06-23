@@ -103,6 +103,43 @@ python 	exp/nas_cgan/scripts/train_net.py \
   --outdir results/eval_intra_FID_NAS_cGAN_CIFAR10
 ```
 
+Eval intra FIDs for NAS-caGAN.
+```bash
+export LD_LIBRARY_PATH=/usr/local/cuda-10.0/lib64:/usr/local/cudnn-10.0-v7.6.5.32/lib64:$LD_LIBRARY_PATH
+export CUDA_VISIBLE_DEVICES=0
+export PYTHONPATH=.:./exp
+python 	exp/nas_cgan/scripts/train_net.py \
+  --config exp/nas_cgan/configs/eval_intra_FID_NAS_caGAN_CIFAR10.yaml \
+  --command eval_intra_FID_NAS_caGAN_CIFAR10 \
+  --outdir results/eval_intra_FID_NAS_caGAN_CIFAR10
+```
+
+### The calibrated results
+
+Prepare intra FID statistic files following the steps above (put these files in *./datasets/nas_cgan/tf_fid_stat/cifar10_train_per_class_32*).
+Download FID logits files produced by the calibrated models [onedrive](https://sjtueducn-my.sharepoint.com/:f:/g/personal/zhoupengcv_sjtu_edu_cn/ElDGDTDcfe9JnYV4sfsFRPwBpgA4UZZDrHKv80F3aZy3JQ?e=YIFdgP),
+and put the files into *./datasets/nas_cgan/fid_logits_of_calibrated_model/*.
+
+```bash
+export LD_LIBRARY_PATH=/usr/local/cuda-10.0/lib64:/usr/local/cudnn-10.0-v7.6.5.32/lib64:$LD_LIBRARY_PATH
+export CUDA_VISIBLE_DEVICES=0
+export PYTHONPATH=.:./exp
+python 	exp/nas_cgan/scripts/train_net.py \
+  --config exp/nas_cgan/configs/eval_calibrated_NAS_cGAN.yaml \
+  --command eval_calibrated_NAS_cGAN \
+  --outdir results/eval_calibrated_NAS_cGAN
+```
+
+```bash
+export LD_LIBRARY_PATH=/usr/local/cuda-10.0/lib64:/usr/local/cudnn-10.0-v7.6.5.32/lib64:$LD_LIBRARY_PATH
+export CUDA_VISIBLE_DEVICES=0
+export PYTHONPATH=.:./exp
+python 	exp/nas_cgan/scripts/train_net.py \
+  --config exp/nas_cgan/configs/eval_calibrated_NAS_caGAN.yaml \
+  --command eval_calibrated_NAS_caGAN \
+  --outdir results/eval_calibrated_NAS_caGAN
+```
+
 ## Acknowledgement
 
 1. https://github.com/facebookresearch/detectron2

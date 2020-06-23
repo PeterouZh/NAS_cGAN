@@ -1028,7 +1028,40 @@ class TrainerRetrainConditional(TrainerNASGAN):
     self.logger.info(f"Final FID: {all_FID}")
     pass
 
+  def eval_calibrated_model(self, ):
+    from template_lib.d2.data import build_cifar10_per_class
 
+    registed_name = get_attr_kwargs(self.cfg.eval_calibrated_model, 'registed_name')
+    fid_stats_dir = get_attr_kwargs(self.cfg.eval_calibrated_model, 'fid_stats_dir')
+    fid_logits_file = get_attr_kwargs(self.cfg.eval_calibrated_model, 'fid_logits_file')
+
+    class_to_idx = MetadataCatalog.get(registed_name).get('class_to_idx')
+    self.logger.info('\n' + pprint.pformat(class_to_idx))
+
+    class2logits_dict = (np.load(fid_logits_file, allow_pickle=True)['fid_logits_dict']).item()
+    index2logits_dict = {class_to_idx[k]: v for k, v in class2logits_dict.items()}
+    intra_FID_dict = {}
+    for class_idx in sorted(index2logits_dict):
+      mu_sigma = np.load(os.path.join(fid_stats_dir, f'{class_idx}.npz'))
+      class_mu, class_sigma = mu_sigma['mu'], mu_sigma['sigma']
+
+      logits = index2logits_dict[class_idx]
+      mu, sigma = self.FID_IS._calculate_fid_stat(pred_FIDs=logits)
+      intra_FID = self.FID_IS._calculate_frechet_distance(mu, sigma, class_mu, class_sigma)
+      intra_FID_dict[class_idx] = intra_FID
+      summary_d = {f'intra_FID': intra_FID}
+      Trainer.summary_dict2txtfig(dict_data=summary_d, prefix='finetune', step=class_idx,
+                                  textlogger=self.myargs.textlogger, save_fig_sec=1)
+      pass
+
+    self.logger.info('\n' + pprint.pformat(intra_FID_dict))
+
+    fid_logits = np.concatenate(list(class2logits_dict.values()), axis=0)
+    all_mu, all_sigma = self.FID_IS._calculate_fid_stat(pred_FIDs=fid_logits)
+    all_FID = self.FID_IS._calculate_frechet_distance(all_mu, all_sigma,
+                                                      self.FID_IS.mu_data, self.FID_IS.sigma_data)
+    self.logger.info(f"Calibrated FID: {all_FID}")
+    pass
 
 
 @TRAINER_REGISTRY.register()

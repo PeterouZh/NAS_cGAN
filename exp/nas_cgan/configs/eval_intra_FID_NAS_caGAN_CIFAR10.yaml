@@ -1,4 +1,4 @@
-eval_intra_FID_NAS_cGAN_CIFAR10:
+eval_intra_FID_NAS_caGAN_CIFAR10:
   args:
     num_gpus: 1
     resume: false
@@ -24,12 +24,9 @@ eval_intra_FID_NAS_cGAN_CIFAR10:
     train_controller_every_iter: 50
     eval_tf_every_itr: 10*iter_every_epoch
     fixed_arc_file: exp/nas_cgan/configs/cond_arcs_cifar10.log
-    fixed_epoch: 0
+    fixed_epoch: 1
     use_ema: true
     load_model: false
-    ckpt_dir: results/CondDenseGAN_CIFAR10_v5/retrain_20200401-21_33_53_332/detectron2
-    ckpt_epoch: 500
-    ckpt_iter_every_epoch: 781
   GAN_metric:
     names:
     - TFFIDISScore
@@ -52,24 +49,25 @@ eval_intra_FID_NAS_cGAN_CIFAR10:
       name: DenseBlock
       n_nodes: 2
       cfg_mix_layer:
-        name: MixedLayer
+        name: MixedLayerShareWeights
+        kernel_size: 3
+        bias: false
     cfg_out_bn:
       name: NoNorm
     cfg_ops:
-      None:
-        name: D2None
       Conv2d_3x3:
         name: ActConv2d
         cfg_act:
           name: ReLU
         cfg_conv:
-          name: Conv2d
+          name: Conv2dOp
           kernel_size: 3
           padding: 1
       StyleV2Conv:
         name: StyleV2Conv
+        add_noise: true
         cfg_modconv:
-          name: ModulatedConv2d
+          name: ModulatedConv2dOp
           kernel_size: 3
           style_dim: 192
     optimizer:
@@ -99,6 +97,8 @@ eval_intra_FID_NAS_cGAN_CIFAR10:
       - 0.0
       - 0.9
       eps: 1.0e-08
+    size: kwargs['img_size']
+    use_cproj: true
   noise:
     z_train:
       name: Normal
@@ -125,11 +125,12 @@ eval_intra_FID_NAS_cGAN_CIFAR10:
     dummy: false
     n_critic: 5
     log_every: 50
+    b: 0.5
   dataset:
     dataset_mapper: CIFAR10DatasetMapper
     img_size: 32
   compute_intra_FID:
-    ckpt_path: datasets/nas_cgan/models/nas_cgan_cifar10.pth
+    ckpt_path: datasets/nas_cgan/models/nas_cagan_cifar10.pth
     registed_name: cifar10_train_per_class
     fid_stats_dir: datasets/nas_cgan/tf_fid_stat/cifar10_train_per_class_32
     num_inception_images: 5000
