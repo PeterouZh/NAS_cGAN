@@ -18,7 +18,6 @@ from detectron2.data import (
 )
 from detectron2.engine import default_argument_parser, default_setup, launch
 from detectron2.evaluation import (
-  CityscapesEvaluator,
   COCOEvaluator,
   COCOPanopticEvaluator,
   DatasetEvaluators,
@@ -44,6 +43,7 @@ from template_lib.utils.modelarts_utils import prepare_dataset
 from template_lib.d2.data import build_dataset_mapper
 from template_lib.d2template.trainer import build_trainer
 from template_lib.d2template.scripts import build_start, START_REGISTRY
+from template_lib.d2.data import build_cifar10
 
 import nas_cgan.scripts
 
