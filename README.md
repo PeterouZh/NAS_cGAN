@@ -1,4 +1,5 @@
-# Searching towards Class-Aware Generators for Conditional Generative Adversarial Networks [paper]() 
+# Searching towards Class-Aware Generators for Conditional Generative Adversarial Networks 
+[paper](https://arxiv.org/abs/2006.14208) 
 
 ## Updates
 
