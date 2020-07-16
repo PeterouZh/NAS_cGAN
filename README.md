@@ -52,7 +52,7 @@ python 	exp/nas_cgan/scripts/train_net.py \
 
 ## Evaluate the models reported in the paper
 
-Download the pre-trained models [onedrive](https://sjtueducn-my.sharepoint.com/:f:/g/personal/zhoupengcv_sjtu_edu_cn/EsokPqpwPMhPi8IjPh8WQBoBQF9S1iunCj-EdpawvjyyHQ?e=owFvIe), 
+Download the trained models [onedrive](https://sjtueducn-my.sharepoint.com/:f:/g/personal/zhoupengcv_sjtu_edu_cn/EsokPqpwPMhPi8IjPh8WQBoBQF9S1iunCj-EdpawvjyyHQ?e=owFvIe), 
 and put them into *./datasets/nas_cgan/models*.
 ### FID and IS
 Eval NAS-cGAN on CIFAR10.
