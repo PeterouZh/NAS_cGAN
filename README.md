@@ -2,9 +2,10 @@
 
 ## Updates
 
+- [x] This paper has not been accepted and is currently not being resubmitted. I currently have no plans to organize and open source the search code. (2021-10-19)
 - [ ] Support DistributedDataParallel (2020-09-17)
 - [x] Evaluation code
-- [ ] Search code (coming!)
+- [ ] Search code 
 
 ## Environment 
 
